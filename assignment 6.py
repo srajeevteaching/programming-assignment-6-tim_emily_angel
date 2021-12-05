@@ -4,7 +4,11 @@
 # Program Inputs: choice of which question to answer
 # Program Outputs: rate of change in violent crime, graph of rates of crime, average of juvenile arrest
 
-#index constants
+# import math plot library
+import matplotlib.pyplot as plt
+
+
+# index constants
 NEIGHBORHOODS = 0
 CRIME_RATE2010 = 1
 CRIME_RATE2011 = 2
@@ -82,7 +86,7 @@ def crime_list_file():
                 each_line[SHOOTING_CALL2012] = float(each_line[SHOOTING_CALL2012])
                 each_line[COMMON_CALL2011] = float(each_line[COMMON_CALL2011])
                 each_line[COMMON_CALL2012] = float(each_line[COMMON_CALL2012])
-                each_line[NARCOTIC_CALL2011]= float(each_line[NARCOTIC_CALL2012])
+                each_line[NARCOTIC_CALL2011] = float(each_line[NARCOTIC_CALL2012])
                 each_line[NARCOTIC_CALL2012] = float(each_line[NARCOTIC_CALL2012])
                 each_line[CAR_ACCIDENT2011] = float(each_line[CAR_ACCIDENT2011])
                 each_line[CAR_ACCIDENT2012] = float(each_line[CAR_ACCIDENT2012])
@@ -98,7 +102,7 @@ def crime_list_file():
                 crime_list.append(each_line)
             except ValueError:
                 print("error: bad value found. skipping line", line_counter)
-            crime_file.close()
+        crime_file.close()
     except FileNotFoundError:
         print("sorry, file not found. cannot complete")
     return crime_list
@@ -108,6 +112,48 @@ def crime_list_file():
 
 # calculate change in violent crime from 2010 to 2014
 # + or - 1 is no change, + or - 5 is significant change
+def violent_crime_change(crime_list, new_file_name):
+    # initialize counts
+    sig_down = 0
+    down = 0
+    no_change = 0
+    up = 0
+    sig_up = 0
+    # open new file in write mode
+    new_file = open(new_file_name, "w")
+    # loop through list of neighborhoods
+    for neighborhood in crime_list:
+        # calculate change
+        change = neighborhood[VIOLENT2014] - neighborhood[VIOLENT2010]
+        # categorize change, print to new file, and add to count
+        if 1 >= change >= -1:
+            print("The violent crime rate in", neighborhood[NEIGHBORHOODS], "has not changed.", file=new_file)
+            no_change += 1
+        elif 4 >= change >= 1:
+            print("The violent crime rate in", neighborhood[NEIGHBORHOODS], "has gone up.", file=new_file)
+            up += 1
+        elif -4 < change < -1:
+            print("The violent crime rate in", neighborhood[NEIGHBORHOODS], "has gone down.", file=new_file)
+            down += 1
+        elif change >= 5:
+            print("The violent crime rate in", neighborhood[NEIGHBORHOODS], "has gone significantly up.",
+                  file=new_file)
+            sig_up += 1
+        elif change <= -5:
+            print("The violent crime rate in", neighborhood[NEIGHBORHOODS], "has gone significantly down.",
+                  file=new_file)
+            sig_down += 1
+    # close file to save changes
+    new_file.close()
+    # make graph of change in violent crime rate
+    x = ["sig down", "down", "no change", "up", "sig up"]
+    plt.xlabel("Significance of change")
+    y = [sig_down, down, no_change, up, sig_up]
+    plt.ylabel("Number of neighborhoods")
+    plt.title("Change in violent crime rate from 2010 to 2014")
+    plt.bar(x, y)
+    plt.show()
+
 
 # graph of neighborhoods with low, moderate, or high crime rates
 # low is < 20, high is > 50
@@ -117,4 +163,3 @@ def crime_list_file():
 # new questions
 
 # main function
-
