@@ -157,7 +157,24 @@ def violent_crime_change(crime_list, new_file_name):
 
 # graph of neighborhoods with low, moderate, or high crime rates
 # low is < 20, high is > 50
-
+def Graph_of_Neighborhood_Crime_rates(crime_list):
+    Low_Crime = 0
+    Med_Crime = 0
+    High_Crime = 0
+    for neighborhood in crime_list:
+        if neighborhood[ADULT_ARREST2014] > 50:
+            High_Crime +=1
+        elif 20 < neighborhood[ADULT_ARREST2014] < 50:
+            Med_Crime +=1
+        elif neighborhood[ADULT_ARREST2014] < 20:
+            Low_Crime +=1
+    x = ["High Crime", "Medium Crime","Low Crime"]
+    y = [High_Crime,Med_Crime,Low_Crime]
+    plt.xlabel("Intensity of Crime")
+    plt.ylabel("Quantity of Neighborhoods")
+    plt.title("Adult Crime in Neighborhoods 2014")
+    plt.bar(x,y)
+    plt.show()
 # average of juvenile arrests
 
 # new questions
