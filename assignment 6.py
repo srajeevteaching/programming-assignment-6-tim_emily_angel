@@ -1,8 +1,10 @@
 # Emily Catanzariti, Angel Scott, Tim Hunt
 # CS151, Dr. Rajeev
 # Programming Assignment 6
-# Program Inputs: choice of which question to answer
-# Program Outputs: rate of change in violent crime, graph of rates of crime, average of juvenile arrest
+# Program Inputs: choice of which question to answer, file name for question 1
+# Program Outputs: rate of change in violent crime, graph of rates of crime, average of juvenile arrest,
+# neighborhood with the most automobile accident calls for service per 1000 residents in 2011
+
 
 # import math plot library
 import matplotlib.pyplot as plt
@@ -105,8 +107,6 @@ def crime_list_file():
     return crime_list
 
 
-# create a menu to choose which action
-
 # calculate change in violent crime from 2010 to 2014
 # + or - 1 is no change, + or - 5 is significant change
 def violent_crime_change(crime_list, new_file_name):
@@ -145,8 +145,7 @@ def violent_crime_change(crime_list, new_file_name):
     # close file to save changes
     new_file.close()
     # make graph of change in violent crime rate
-    print("Please close graph to continue the program.")
-    x = ["sig down", "down", "no change", "up", "sig up"]
+    x = ["significantly down", "down", "no change", "up", "significantly up"]
     plt.xlabel("Significance of change")
     y = [sig_down, down, no_change, up, sig_up]
     plt.ylabel("Number of neighborhoods")
@@ -246,4 +245,56 @@ def max_calls(crime_list):
           "is:", crime_list[max_calls_index][NEIGHBORHOODS])
 
 
+# menu function
+def menu():
+    print("Which question do you want to answer?")
+    user_choice = input("Please enter: 1, 2, 3, 4, or end: ")
+    if user_choice.isdigit():
+        while user_choice != "1" and user_choice != "2" and user_choice != "3" and user_choice != "4":
+            print("Choice invalid. Please try again.")
+            user_choice = input("Please enter: 1, 2, 3, 4, or end: ")
+    else:
+        user_choice = user_choice.strip().lower()
+        while user_choice != "end":
+            print("Choice invalid. Please try again.")
+            user_choice = input("Please enter: 1, 2, 3, 4, or end: ")
+            user_choice = user_choice.strip().lower()
+    return user_choice
+
+
 # main function
+def main():
+    # sort crime data into a list
+    print("Now loading crime data...")
+    crime_list = crime_list_file()
+    print()
+    # output program purpose
+    print("This program answers the following questions about crime data from", len(crime_list), "neighborhoods:")
+    print("Question 1: What has been the change in violent crime rate from 2010 to 2014?")
+    print("Question 2: What is the number of neighborhoods with low, moderate, and high numbers of adult arrests")
+    print("            per 1000 residents over the age of 18 in 2014?")
+    print("Question 3: What is the average number of total juvenile arrests for each category of domestic violence")
+    print("            shootings?")
+    print("Question 4: Which neighborhood had the most automobile accident calls for service per 1000 residents in "
+          "2011?")
+    print()
+    # get user choice
+    user_choice = menu()
+    # loop program as user chooses to answer a question
+    while user_choice == "1" or user_choice == "2" or user_choice == "3" or user_choice == "4":
+        if user_choice == "1":
+            print("The answer to this question will be output to a new file of your choosing.")
+            new_file_name = input("Please enter the name of your file: ")
+            violent_crime_change(crime_list, new_file_name)
+        elif user_choice == "2":
+            Graph_of_Neighborhood_Crime_rates(crime_list)
+        elif user_choice == "3":
+            juvenile_arrests(crime_list)
+        elif user_choice == "4":
+            max_calls(crime_list)
+        user_choice = menu()
+    # when user chooses to end the program, or if crime file does not load.
+    print("Thank you for using our program.")
+
+
+main()
