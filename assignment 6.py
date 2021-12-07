@@ -7,7 +7,6 @@
 # import math plot library
 import matplotlib.pyplot as plt
 
-
 # index constants
 NEIGHBORHOODS = 0
 CRIME_RATE2010 = 1
@@ -95,9 +94,7 @@ def crime_list_file():
                 each_line[GUN_HOMICIDE2013] = float(each_line[GUN_HOMICIDE2013])
                 each_line[GUN_HOMICIDE2014] = float(each_line[GUN_HOMICIDE2014])
                 each_line[ADULT_ARREST2014] = float(each_line[ADULT_ARREST2014])
-                each_line[PROPERTY_NARCOTIC] = each_line[PROPERTY_NARCOTIC].split(":")
                 each_line[PROPERTY_NARCOTIC] = each_line[PROPERTY_NARCOTIC].strip().lower()
-                each_line[DV_SHOOTING] = each_line[DV_SHOOTING].split(":")
                 each_line[DV_SHOOTING] = each_line[DV_SHOOTING].strip().lower()
                 crime_list.append(each_line)
             except ValueError:
@@ -124,15 +121,15 @@ def violent_crime_change(crime_list, new_file_name):
     # loop through list of neighborhoods
     for neighborhood in crime_list:
         # calculate change
-        change = neighborhood[VIOLENT2014] - neighborhood[VIOLENT2010]
+        change = float(neighborhood[VIOLENT2014]) - float(neighborhood[VIOLENT2010])
         # categorize change, print to new file, and add to count
         if 1 >= change >= -1:
             print("The violent crime rate in", neighborhood[NEIGHBORHOODS], "has not changed.", file=new_file)
             no_change += 1
-        elif 4 >= change >= 1:
+        elif 5 > change >= 1:
             print("The violent crime rate in", neighborhood[NEIGHBORHOODS], "has gone up.", file=new_file)
             up += 1
-        elif -4 < change < -1:
+        elif -5 < change < -1:
             print("The violent crime rate in", neighborhood[NEIGHBORHOODS], "has gone down.", file=new_file)
             down += 1
         elif change >= 5:
@@ -143,9 +140,12 @@ def violent_crime_change(crime_list, new_file_name):
             print("The violent crime rate in", neighborhood[NEIGHBORHOODS], "has gone significantly down.",
                   file=new_file)
             sig_down += 1
+        else:
+            print("Error. Skipping", neighborhood[NEIGHBORHOODS])
     # close file to save changes
     new_file.close()
     # make graph of change in violent crime rate
+    print("Please close graph to continue the program.")
     x = ["sig down", "down", "no change", "up", "sig up"]
     plt.xlabel("Significance of change")
     y = [sig_down, down, no_change, up, sig_up]
@@ -163,19 +163,78 @@ def Graph_of_Neighborhood_Crime_rates(crime_list):
     High_Crime = 0
     for neighborhood in crime_list:
         if neighborhood[ADULT_ARREST2014] > 50:
-            High_Crime +=1
+            High_Crime += 1
         elif 20 < neighborhood[ADULT_ARREST2014] < 50:
-            Med_Crime +=1
+            Med_Crime += 1
         elif neighborhood[ADULT_ARREST2014] < 20:
-            Low_Crime +=1
-    x = ["High Crime", "Medium Crime","Low Crime"]
-    y = [High_Crime,Med_Crime,Low_Crime]
+            Low_Crime += 1
+    x = ["High Crime", "Medium Crime", "Low Crime"]
+    y = [High_Crime, Med_Crime, Low_Crime]
     plt.xlabel("Intensity of Crime")
     plt.ylabel("Quantity of Neighborhoods")
     plt.title("Adult Crime in Neighborhoods 2014")
-    plt.bar(x,y)
+    plt.bar(x, y)
     plt.show()
-# average of juvenile arrests
+
+
+# average of juvenile arrests for each category of dv-shootings column
+def juvenile_arrests(crime_list):
+    # counters for sum of jv arrests per dv-shooting category
+    # counters for number of neighborhoods in each dv-shootings category
+    sum_one = 0
+    total_one = 0
+    sum_two = 0
+    total_two = 0
+    sum_three = 0
+    total_three = 0
+    sum_four = 0
+    total_four = 0
+    sum_five = 0
+    total_five = 0
+    sum_six = 0
+    total_six = 0
+    # loop through each neighborhood and add to counters accordingly
+    for neighborhood in crime_list:
+        if neighborhood[DV_SHOOTING] == "high-domestic violence:moderate-shootings":
+            total_one += 1
+            sum_one += neighborhood[JUVENILE_ARREST2011]
+        elif neighborhood[DV_SHOOTING] == "moderate-domestic-violence:moderate-shootings":
+            total_two += 1
+            sum_two += neighborhood[JUVENILE_ARREST2011]
+        elif neighborhood[DV_SHOOTING] == "moderate-domestic-violence:low-shootings":
+            total_three += 1
+            sum_three += neighborhood[JUVENILE_ARREST2011]
+        elif neighborhood[DV_SHOOTING] == "high-domestic violence:low-shootings":
+            total_four += 1
+            sum_four += neighborhood[JUVENILE_ARREST2011]
+        elif neighborhood[DV_SHOOTING] == "high-domestic violence:high-shootings":
+            total_five += 1
+            sum_five += neighborhood[JUVENILE_ARREST2011]
+        elif neighborhood[DV_SHOOTING] == "low-domestic-violence:low-shootings":
+            total_six += 1
+            sum_six += neighborhood[JUVENILE_ARREST2011]
+        else:
+            print("Error. Skipping ", neighborhood[NEIGHBORHOODS])
+    # calculate and output average number of juvenile arrests for each dv-shootings category
+    avg_hdv_ms = sum_one / total_one
+    print("The average number of juvenile arrests for", total_one, "neighborhoods with High-Domestic Violence: "
+                                                                   "Moderate Shootings is %.2f" % avg_hdv_ms)
+    avg_mdv_ms = sum_two / total_two
+    print("The average number of juvenile arrests for", total_two, "neighborhoods with Moderate-Domestic Violence:"
+                                                                   " Moderate Shootings is %.2f" % avg_mdv_ms)
+    avg_mdv_ls = sum_three / total_three
+    print("The average number of juvenile arrests for", total_three, "neighborhoods with Moderate-Domestic Violence:"
+                                                                     " Low Shootings is %.2f" % avg_mdv_ls)
+    avg_hdv_ls = sum_four / total_four
+    print("The average number of juvenile arrests for", total_four, "neighborhoods with High-Domestic Violence: "
+                                                                    "Low Shootings is %.2f" % avg_hdv_ls)
+    avg_hdv_hs = sum_five / total_five
+    print("The average number of juvenile arrests for", total_five, "neighborhoods with High-Domestic Violence: "
+                                                                    "High Shootings is %.2f" % avg_hdv_hs)
+    avg_ldv_ls = sum_six / total_six
+    print("The average number of juvenile arrests for", total_six, "neighborhoods with Low-Domestic Violence: "
+                                                                   "Low Shootings is %.2f" % avg_ldv_ls)
+
 
 # new questions
 
